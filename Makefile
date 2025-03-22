@@ -7,5 +7,10 @@ $(TARGET): $(SRC) go.mod
 	go build -trimpath -ldflags '-s -w -buildid=' -gcflags=all="-B -l" -o $@ ./cmd/temple
 	# tinygo build -o $@ ./cmd/main
 
+.PHONY: clean
 clean:
 	rm -rf $(BINDIR)
+
+.PHONY: lint
+lint:
+	golangci-lint run

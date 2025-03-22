@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil" // nolint: staticcheck
 	"os"
 	"strings"
 	"text/template"
@@ -41,7 +42,7 @@ func main() {
 		}
 	}
 
-	content, err := io.ReadAll(input)
+	content, err := ioutil.ReadAll(input)
 	if err != nil {
 		exit(err)
 	}
@@ -73,7 +74,7 @@ func mustRender(input string, w io.Writer) {
 		"coalesce":   coalesceFunc,
 		"append":     appendFunc,
 		"uniq":       uniqFunc,
-		"replace":    strings.ReplaceAll,
+		"replace":    replaceFunc,
 		"upper":      strings.ToUpper,
 		"lower":      strings.ToLower,
 		"istrue":     istrueFunc,
@@ -139,6 +140,11 @@ func appendFunc(arg ...[]string) []string {
 	}
 
 	return res
+}
+
+func replaceFunc(s string, a string, b string) string {
+	// Why not strings.Replace? Because we want compatibility with ancient Go versions.
+	return strings.Replace(s, a, b, -1) // nolint: gocritic
 }
 
 func uniqFunc(a []string) []string {

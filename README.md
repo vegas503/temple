@@ -10,10 +10,17 @@ Why not ...
 - [`gomplate`](https://github.com/hairyhenderson/gomplate) - because it's too fat! Seriously, guys, 100 megs for a template renderer?!
 - `sed`/`awk` - too much fuss
 
+Tested with Go 1.10.7, 1.13, 1.16-1.19, 1.23.6
+
 ## Installation
 
 ```sh
+# Default flags (~3.8 MB):
 go install github.com/vegas503/temple/cmd/temple@latest
+# Produce a smaller binary (~2.3 MB):
+go install \
+    -ldflags '-s -w' -gcflags=all="-B -l" -trimpath \
+    github.com/vegas503/temple/cmd/temple@latest
 ```
 
 ## Usage
@@ -43,6 +50,10 @@ In addition to the built-ins, `temple` provides some additional functions for co
     ABC
     ```
 
+- `contains STRING SUBSTRING` - proxy for [strings.Contains](https://pkg.go.dev/strings#Contains)
+
+- `join ARRAY STRING` - proxy for [strings.Join](https://pkg.go.dev/strings#Join)
+
 - `coalesce STRING...` - returns first non-empty string
 
     ```sh
@@ -71,6 +82,12 @@ In addition to the built-ins, `temple` provides some additional functions for co
     ```sh
     $ echo '{{ range (uniq (split (env "COLORS") ",")) }}{{ . }}{{ end }}' | COLORS=red,green,red temple
     redgreen
+
+- `replace STRING SUBSTRING SUBSTRING` - proxy for [strings.ReplaceAll](https://pkg.go.dev/strings#Replace) with last arg set to `-1` (i. e. replace all)
+
+- `upper STRING` - proxy for [strings.ToUpper](https://pkg.go.dev/strings#ToUpper)
+
+- `lower STRING` - proxy for [strings.ToLower](https://pkg.go.dev/strings#ToLower)
 
 - `istrue STRING` - returns true if string is non-empty and starts with "1", "t", "y" or "on".
 
