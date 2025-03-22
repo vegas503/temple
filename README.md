@@ -19,7 +19,9 @@ Tested with Go 1.10.7, 1.13, 1.16-1.19, 1.23.6
 go install github.com/vegas503/temple/cmd/temple@latest
 # Produce a smaller binary (~2.3 MB):
 go install \
-    -ldflags '-s -w' -gcflags=all="-B -l" -trimpath \
+    -trimpath \
+    -ldflags '-s -w' \
+    -gcflags=all='-B -l -wb=false' \
     github.com/vegas503/temple/cmd/temple@latest
 ```
 
