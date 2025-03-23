@@ -14,10 +14,21 @@ Tested with Go 1.10.7, 1.13, 1.16-1.19, 1.23.6
 
 ## Installation
 
+### Pre-built binary
+
 ```sh
-# Default flags (~3.8 MB):
+curl -L https://github.com/vegas503/temple/releases/latest/download/temple \
+    -o /usr/bin/temple && \
+    chmod +x /usr/bin/temple
+```
+
+### Install using go
+
+```sh
+# Build with default flags (~3.8 MB):
 go install github.com/vegas503/temple/cmd/temple@latest
-# Produce a smaller binary (~2.3 MB):
+
+# Build with flags to produce a smaller binary (~2.3 MB):
 go install \
     -trimpath \
     -ldflags '-s -w' \
