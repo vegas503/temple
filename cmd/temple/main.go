@@ -69,10 +69,10 @@ func mustRender(input string, w io.Writer) {
 		"env":        envFunc,
 		"envdefault": envdefaultFunc,
 		"split":      splitFunc,
-		"contains":   strings.Contains,
-		"join":       strings.Join,
+		"contains":   containsFunc,
+		"join":       joinFunc,
 		"coalesce":   coalesceFunc,
-		"append":     appendFunc,
+		"chain":      chainFunc,
 		"uniq":       uniqFunc,
 		"replace":    replaceFunc,
 		"upper":      strings.ToUpper,
@@ -106,7 +106,7 @@ func envdefaultFunc(key string, def string) string {
 	return def
 }
 
-func splitFunc(s string, sep string) []string {
+func splitFunc(sep string, s string) []string {
 	if s == "" {
 		return nil
 	}
@@ -123,6 +123,14 @@ func splitFunc(s string, sep string) []string {
 	return res
 }
 
+func containsFunc(needle string, haystack string) bool {
+	return strings.Contains(haystack, needle)
+}
+
+func joinFunc(glue string, s []string) string {
+	return strings.Join(s, glue)
+}
+
 func coalesceFunc(arg ...string) string {
 	for _, s := range arg {
 		if s != "" {
@@ -133,7 +141,7 @@ func coalesceFunc(arg ...string) string {
 	return ""
 }
 
-func appendFunc(arg ...[]string) []string {
+func chainFunc(arg ...[]string) []string {
 	res := []string{}
 	for _, s := range arg {
 		res = append(res, s...)
@@ -142,9 +150,9 @@ func appendFunc(arg ...[]string) []string {
 	return res
 }
 
-func replaceFunc(s string, a string, b string) string {
+func replaceFunc(from string, to string, s string) string {
 	// Why not strings.Replace? Because we want compatibility with ancient Go versions.
-	return strings.Replace(s, a, b, -1) // nolint: gocritic
+	return strings.Replace(s, from, to, -1) // nolint: gocritic
 }
 
 func uniqFunc(a []string) []string {

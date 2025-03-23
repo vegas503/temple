@@ -6,15 +6,15 @@
 User name: {{ env "USER" }}
 
 Colors:
-{{- $colors := (split (env "COLORS") ",") }}
+{{- $colors := env "COLORS" | split "," }}
 {{- range $c := $colors }}
   - {{ $c }}
 {{- end }}
 
 Features:
-{{- $features := (split (envdefault "FEATURES" "") ",") }}
+{{- $features := envdefault "FEATURES" "" | split "," }}
 {{- range $feat := $features }}
-    {{- $kv := (split $feat "=") }}
+    {{- $kv := (split "=" $feat) }}
     {{- $key := (index $kv 0) }}
     {{- $value := (index $kv 1) }}
     Feature "{{ $key }}" enabled: {{ if (istrue $value) }}YES{{ else }}NO{{ end }}

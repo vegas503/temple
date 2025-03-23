@@ -40,7 +40,14 @@ go install \
 
 All the heavy lifting is done by Go's [text/template](https://pkg.go.dev/text/template) package. Go see their docs first!
 
-In addition to the built-ins, `temple` provides some additional functions for common scenarios:
+In addition to the built-ins, `temple` provides some additional functions for common scenarios.
+
+Some functions (e. g. `contains`, `split`', `join`, and `replace`) have their arguments swapped.
+This is done to make it easier to use [function pipelines](https://pkg.go.dev/text/template#hdr-Examples).
+
+For instance, `{{ $user := (split "," (env "USERS")) }}` can be written as `{{ $user := env "USERS" | split "," }}`.
+
+### Functions
 
 - `env STRING` - gets env var value, throws error if env var is not set
 
@@ -56,16 +63,18 @@ In addition to the built-ins, `temple` provides some additional functions for co
     foo
     ```
 
-- `split STRING DELIM` - splits a string with a delimiter, trims whitespaces and returns array with all empty elements removed
+- `split DELIM STRING` - splits a string with a delimiter, trims whitespaces and returns array with all empty elements removed
 
     ```sh
-    $ echo '{{ range $v := (split (env "ITEMS") ",") }}{{ $v }}{{ end }}' | ITEMS="A, B ,  C " temple
+    $ echo '{{ range $v := (split "," (env "ITEMS")) }}{{ $v }}{{ end }}' | ITEMS="A, B ,  C " temple
+    ABC
+    $ echo '{{ range $v := env "ITEMS" | split "," }}{{ $v }}{{ end }}' | ITEMS="A, B ,  C " temple
     ABC
     ```
 
-- `contains STRING SUBSTRING` - proxy for [strings.Contains](https://pkg.go.dev/strings#Contains)
+- `contains SUBSTRING STRING` - proxy for [strings.Contains](https://pkg.go.dev/strings#Contains) with arguments swapped
 
-- `join ARRAY STRING` - proxy for [strings.Join](https://pkg.go.dev/strings#Join)
+- `join GLUE ARRAY` - proxy for [strings.Join](https://pkg.go.dev/strings#Join) with arguments swapped
 
 - `coalesce STRING...` - returns first non-empty string
 
@@ -74,13 +83,13 @@ In addition to the built-ins, `temple` provides some additional functions for co
     two
     ```
 
-- `append ARRAY...` - concatenates arrays
+- `chain ARRAY...` - concatenates arrays
 
     ```sh
     $ cat temple.tpl
-    {{- $colors := (split (env "COLORS") ",") }}
-    {{- $numbers := (split (env "NUMBERS") ",") }}
-    {{- range $item := (append $colors $numbers) }}
+    {{- $colors := env "COLORS" | split "," }}
+    {{- $numbers := env "NUMBERS" | split "," }}
+    {{- range $item := (chain $colors $numbers) }}
       * {{ $item }}
     {{- end }}
     $ COLORS=red,green,blue NUMBERS=34,42 temple -i temple.tpl
@@ -93,10 +102,13 @@ In addition to the built-ins, `temple` provides some additional functions for co
 - `uniq ARRAY` - returns array with all duplicate elements removed
 
     ```sh
-    $ echo '{{ $v := range (uniq (split (env "COLORS") ",")) }}{{ $v }}{{ end }}' | COLORS=red,green,red temple
+    $ echo '{{ range $v := (uniq (split "," (env "COLORS"))) }}{{ $v }}{{ end }}' | COLORS=red,green,red temple
     redgreen
+    $ echo '{{ range $v := env "COLORS" | split "," | uniq }}{{ $v }}{{ end }}' | COLORS=red,green,red temple
+    redgreen
+    ```
 
-- `replace STRING SUBSTRING SUBSTRING` - proxy for [strings.ReplaceAll](https://pkg.go.dev/strings#ReplaceAll)
+- `replace FROM TO STRING` - proxy for [strings.ReplaceAll](https://pkg.go.dev/strings#ReplaceAll) but with source string as last argument
 
 - `upper STRING` - proxy for [strings.ToUpper](https://pkg.go.dev/strings#ToUpper)
 
