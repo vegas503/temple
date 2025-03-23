@@ -45,8 +45,8 @@ In addition to the built-ins, `temple` provides some additional functions for co
 - `env STRING` - gets env var value, throws error if env var is not set
 
     ```sh
-    $ echo '{{ env "USER" }}' | temple
-    username
+    $ echo '{{ env "USER" }}' | USER=skaarj temple
+    skaarj
     ```
 
 - `envdefault STRING STRING` - gets env var value, returns default value if empty or unset
@@ -59,7 +59,7 @@ In addition to the built-ins, `temple` provides some additional functions for co
 - `split STRING DELIM` - splits a string with a delimiter, trims whitespaces and returns array with all empty elements removed
 
     ```sh
-    $ echo '{{ range (split "A, B , C" ",") }}{{ . }}{{ end }}' | temple
+    $ echo '{{ range (split (env "ITEMS") ",") }}{{ . }}{{ end }}' | ITEMS="A, B ,  C " temple
     ABC
     ```
 
