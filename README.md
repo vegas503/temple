@@ -42,28 +42,28 @@ All the heavy lifting is done by Go's [text/template](https://pkg.go.dev/text/te
 
 In addition to the built-ins, `temple` provides some additional functions for common scenarios.
 
-Some functions (e. g. `contains`, `split`', `join`, and `replace`) have their arguments swapped.
+Some functions (e. g. `contains`, `split`, `join`, and `replace`) have their arguments swapped.
 This is done to make it easier to use [function pipelines](https://pkg.go.dev/text/template#hdr-Examples).
 
-For instance, `{{ $user := (split "," (env "USERS")) }}` can be written as `{{ $user := env "USERS" | split "," }}`.
+For instance, `{{ $users := (split "," (env "USERS")) }}` can be written as `{{ $users := env "USERS" | split "," }}`.
 
 ### Functions
 
-- `env STRING` - gets env var value, throws error if env var is not set
+- `env(name: string) string` - gets env var value, throws error if env var is not set
 
     ```sh
     $ echo '{{ env "USER" }}' | USER=skaarj temple
     skaarj
     ```
 
-- `envdefault STRING STRING` - gets env var value, returns default value if empty or unset
+- `envdefault(name: string, def: string) string` - gets env var value, returns default value if empty or unset
 
     ```sh
     $ echo '{{ envdefault "SOME_UNSET_VAR" "foo" }}' | temple
     foo
     ```
 
-- `split DELIM STRING` - splits a string with a delimiter, trims whitespaces and returns array with all empty elements removed
+- `split(delim: string, s: string) []string` - splits a string with a delimiter, trims whitespaces and returns array with all empty elements removed
 
     ```sh
     $ echo '{{ range $v := (split "," (env "ITEMS")) }}{{ $v }}{{ end }}' | ITEMS="A, B ,  C " temple
@@ -72,18 +72,18 @@ For instance, `{{ $user := (split "," (env "USERS")) }}` can be written as `{{ $
     ABC
     ```
 
-- `contains SUBSTRING STRING` - proxy for [strings.Contains](https://pkg.go.dev/strings#Contains) with arguments swapped
+- `contains(needle: string, s: string) bool` - proxy for [strings.Contains](https://pkg.go.dev/strings#Contains) with arguments swapped
 
-- `join GLUE ARRAY` - proxy for [strings.Join](https://pkg.go.dev/strings#Join) with arguments swapped
+- `join(glue: string, ss []string) string` - proxy for [strings.Join](https://pkg.go.dev/strings#Join) with arguments swapped
 
-- `coalesce STRING...` - returns first non-empty string
+- `coalesce(s string...) string` - returns first non-empty string
 
     ```sh
     $ echo '{{ coalesce "" "two" "three" }}' | temple
     two
     ```
 
-- `chain ARRAY...` - concatenates arrays
+- `chain (ss ...[]string) []string` - concatenates arrays
 
     ```sh
     $ cat temple.tpl
@@ -99,7 +99,7 @@ For instance, `{{ $user := (split "," (env "USERS")) }}` can be written as `{{ $
       * 34
       * 42
 
-- `uniq ARRAY` - returns array with all duplicate elements removed
+- `uniq(ss []string) []string` - returns array with all duplicate elements removed
 
     ```sh
     $ echo '{{ range $v := (uniq (split "," (env "COLORS"))) }}{{ $v }}{{ end }}' | COLORS=red,green,red temple
@@ -108,13 +108,13 @@ For instance, `{{ $user := (split "," (env "USERS")) }}` can be written as `{{ $
     redgreen
     ```
 
-- `replace FROM TO STRING` - proxy for [strings.ReplaceAll](https://pkg.go.dev/strings#ReplaceAll) but with source string as last argument
+- `replace(from: string, to: string, s: string) string` - proxy for [strings.ReplaceAll](https://pkg.go.dev/strings#ReplaceAll) but with source string as last argument
 
-- `upper STRING` - proxy for [strings.ToUpper](https://pkg.go.dev/strings#ToUpper)
+- `upper(s: string) string` - proxy for [strings.ToUpper](https://pkg.go.dev/strings#ToUpper)
 
-- `lower STRING` - proxy for [strings.ToLower](https://pkg.go.dev/strings#ToLower)
+- `lower(s: string) string` - proxy for [strings.ToLower](https://pkg.go.dev/strings#ToLower)
 
-- `istrue STRING` - returns true if string is non-empty and starts with "1", "t", "y" or "on".
+- `istrue(s: string) bool` - returns true if string is non-empty and starts with "1", "t", "y" or "on".
 
     ```sh
     $ TPL='{{ if (istrue (env "FEATURE")) }}Enabled{{ else }}Disabled{{ end }}'
@@ -124,7 +124,7 @@ For instance, `{{ $user := (split "," (env "USERS")) }}` can be written as `{{ $
     Disabled
     ```
 
-- `error STRING` - prints error and exists with non-zero code
+- `error(s: string)` - prints error and exists with non-zero code
 
     ```sh
     $ echo '{{ error "Dafuq!" }}' | temple
