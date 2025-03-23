@@ -59,7 +59,7 @@ In addition to the built-ins, `temple` provides some additional functions for co
 - `split STRING DELIM` - splits a string with a delimiter, trims whitespaces and returns array with all empty elements removed
 
     ```sh
-    $ echo '{{ range (split (env "ITEMS") ",") }}{{ . }}{{ end }}' | ITEMS="A, B ,  C " temple
+    $ echo '{{ range $v := (split (env "ITEMS") ",") }}{{ $v }}{{ end }}' | ITEMS="A, B ,  C " temple
     ABC
     ```
 
@@ -80,8 +80,8 @@ In addition to the built-ins, `temple` provides some additional functions for co
     $ cat temple.tpl
     {{- $colors := (split (env "COLORS") ",") }}
     {{- $numbers := (split (env "NUMBERS") ",") }}
-    {{- range (append $colors $numbers) }}
-      * {{ . }}
+    {{- range $item := (append $colors $numbers) }}
+      * {{ $item }}
     {{- end }}
     $ COLORS=red,green,blue NUMBERS=34,42 temple -i temple.tpl
       * red
@@ -93,7 +93,7 @@ In addition to the built-ins, `temple` provides some additional functions for co
 - `uniq ARRAY` - returns array with all duplicate elements removed
 
     ```sh
-    $ echo '{{ range (uniq (split (env "COLORS") ",")) }}{{ . }}{{ end }}' | COLORS=red,green,red temple
+    $ echo '{{ $v := range (uniq (split (env "COLORS") ",")) }}{{ $v }}{{ end }}' | COLORS=red,green,red temple
     redgreen
 
 - `replace STRING SUBSTRING SUBSTRING` - proxy for [strings.ReplaceAll](https://pkg.go.dev/strings#ReplaceAll)
