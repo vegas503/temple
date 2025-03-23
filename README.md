@@ -85,7 +85,7 @@ In addition to the built-ins, `temple` provides some additional functions for co
     $ echo '{{ range (uniq (split (env "COLORS") ",")) }}{{ . }}{{ end }}' | COLORS=red,green,red temple
     redgreen
 
-- `replace STRING SUBSTRING SUBSTRING` - proxy for [strings.ReplaceAll](https://pkg.go.dev/strings#Replace) with last arg set to `-1` (i. e. replace all)
+- `replace STRING SUBSTRING SUBSTRING` - proxy for [strings.ReplaceAll](https://pkg.go.dev/strings#ReplaceAll)
 
 - `upper STRING` - proxy for [strings.ToUpper](https://pkg.go.dev/strings#ToUpper)
 
