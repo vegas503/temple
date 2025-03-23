@@ -1,0 +1,11 @@
+User name: foo
+
+Colors:
+  - red
+  - green
+  - blue
+
+Features:
+    Feature "one" enabled: YES
+    Feature "two" enabled: NO
+    Feature "three" enabled: YES

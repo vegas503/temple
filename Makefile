@@ -14,3 +14,7 @@ clean:
 .PHONY: lint
 lint:
 	golangci-lint run
+
+.PHONY: test
+test:
+	cat examples/template.tpl | USER=foo COLORS=red,green,blue FEATURES=one=y,two=n,three=y go run ./cmd/temple | diff - ./examples/expected.txt
